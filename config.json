@@ -1,0 +1,16 @@
+{
+  "outputPath": "public",
+  "workingPath": "temp",
+  "projects": [
+    {
+      "serves": "/",
+      "source": "home"
+    },
+    {
+      "serves": "/emoji-cooccurrence",
+      "source": "https://github.com/jamm-es/emoji-cooccurrence",
+      "buildCommand": "npm run build",
+      "buildOutput": "build"
+    }
+  ]
+}
