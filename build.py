@@ -3,11 +3,13 @@ import os
 import shutil
 import stat
 import subprocess
+import sys
 from urllib.parse import urlparse
 
 with open('config.json') as c:
     config = json.load(c)
 
+print(sys.version)
 
 # used to chmod read only files when doing rmtree
 def remove_readonly(func, path, _):
