@@ -82,9 +82,18 @@ for project in config['projects']:
     else:
         copy_from = config['workingPath']
 
-    # copy completed files into public directory
+    # copy completed files into public directory - different function is needed to not copy dir if relative url is root
     relative_url = project['serves']
     if relative_url[0] == '/':
         relative_url = relative_url[1:]
     copy_to = os.path.join(config['outputPath'], relative_url)
-    shutil.copytree(copy_from, copy_to, dirs_exist_ok=True)
+    if relative_url == '':
+        for home_path in os.listdir(copy_from):
+            home_copy_from = os.path.join(copy_from, home_path)
+            home_copy_to = os.path.join(copy_to, home_path)
+            if os.path.isfile(home_copy_from):
+                shutil.copyfile(home_copy_from,home_copy_to)
+            else:
+                shutil.copytree(home_copy_from, home_copy_to)
+    else:
+        shutil.copytree(copy_from, copy_to)
