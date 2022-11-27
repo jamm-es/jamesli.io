@@ -3,13 +3,11 @@ import os
 import shutil
 import stat
 import subprocess
-import sys
 from urllib.parse import urlparse
 
 with open('config.json') as c:
     config = json.load(c)
 
-print(sys.version)
 
 # used to chmod read only files when doing rmtree
 def remove_readonly(func, path, _):
@@ -63,7 +61,6 @@ for project in config['projects']:
     # case where it's a url
     url = urlparse(project['source'])
     if bool(url.scheme):
-        subprocess.run('git --version', shell=True)
         subprocess.run(f'git clone --depth=1 {project["source"]} {config["workingPath"]}', shell=True)
 
     # case where it's a path - copy contents to working directory
@@ -74,11 +71,24 @@ for project in config['projects']:
     else:
         raise Exception(f'"{project["source"]}" is neither a valid path nor valid url')
 
+    # fix serves url to not have initial slash
+    relative_url = project['serves']
+    if relative_url[0] == '/':
+        relative_url = relative_url[1:]
+
 
     # building project
 
     # if there are build commands, run them
     if has_all_build_keys:
+        # if it exists, set "homepage" property in package.json
+        package_path = os.path.join(config['workingPath'], 'package.json')
+        if os.path.exists(package_path):
+            with open(package_path, 'r') as f:
+                package = json.load(f)
+            package['homepage'] = os.path.join('/', relative_url)
+            with open(package_path, 'w') as f:
+                json.dump(package, f)
         for command in project['buildCommands']:
             subprocess.run(command, cwd=config['workingPath'], shell=True)
         copy_from = os.path.join(config['workingPath'], project['buildOutput'])
@@ -86,9 +96,6 @@ for project in config['projects']:
         copy_from = config['workingPath']
 
     # copy completed files into public directory - different function is needed to not copy dir if relative url is root
-    relative_url = project['serves']
-    if relative_url[0] == '/':
-        relative_url = relative_url[1:]
     copy_to = os.path.join(config['outputPath'], relative_url)
     if relative_url == '':
         for home_path in os.listdir(copy_from):
