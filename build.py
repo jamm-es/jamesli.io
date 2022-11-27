@@ -61,8 +61,8 @@ for project in config['projects']:
     # case where it's a url
     url = urlparse(project['source'])
     if bool(url.scheme):
-        subprocess.run(['git', '--version'], shell=True)
-        subprocess.run(['git', 'clone', '--depth=1', project['source'], config['workingPath']], shell=True)
+        subprocess.run('git --version', shell=True)
+        subprocess.run(f'git clone --depth=1 {project["source"]} {config["workingPath"]}', shell=True)
 
     # case where it's a path - copy contents to working directory
     elif os.path.exists(project['source']):
