@@ -9,7 +9,10 @@
     {
       "serves": "/emoji-cooccurrence",
       "source": "https://github.com/jamm-es/emoji-cooccurrence",
-      "buildCommand": "npm run build",
+      "buildCommands": [
+        "npm i",
+        "npm run build"
+      ],
       "buildOutput": "build"
     }
   ]
