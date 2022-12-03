@@ -5,7 +5,7 @@ on subdirectories of my website. The contents of the main source directory will 
 
 ## Setting up
 
-The build command should be `python build.py`, requiring python 3.9.
+The build command should be `python build.py`, requiring python 3.7.
 
 With the current `config.json` setup, the build output folder is `public`.
 
