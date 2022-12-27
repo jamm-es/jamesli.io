@@ -3,7 +3,8 @@ import os
 import shutil
 import stat
 import subprocess
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
+from bs4 import BeautifulSoup
 
 with open('config.json') as c:
     config = json.load(c)
@@ -76,7 +77,6 @@ for project in config['projects']:
     if relative_url[0] == '/':
         relative_url = relative_url[1:]
 
-
     # building project
 
     # if there are build commands, run them
@@ -93,6 +93,23 @@ for project in config['projects']:
             subprocess.run(command, cwd=config['workingPath'], shell=True)
         copy_from = os.path.join(config['workingPath'], project['buildOutput'])
     else:
+        # when there isn't a build command, fix all relative file paths
+        path_to_begin = '/' + relative_url if len(relative_url) != 0 and relative_url[-1] == '/' else '/' + relative_url + '/'
+        for dirpath, dirnames, filenames in os.walk(config['workingPath']):
+            for filename in filenames:
+                path = os.path.join(dirpath, filename)
+                if(path[-5:] != '.html'):
+                    continue
+                with open(path, 'r') as f:
+                    soup = BeautifulSoup(f, 'html.parser')
+                for script_tag in soup.find_all('script', src=True):
+                    if urlparse(script_tag['src']).netloc == '':
+                        script_tag['src'] = urljoin(path_to_begin, script_tag['src'])
+                for link_tag in soup.find_all('link', rel='stylesheet', href=True):
+                    if urlparse(link_tag['href']).netloc == '':
+                        link_tag['href'] = urljoin(path_to_begin, link_tag['href'])
+                with open(path, 'w') as f:
+                    f.write(str(soup))
         copy_from = config['workingPath']
 
     # copy completed files into public directory - different function is needed to not copy dir if relative url is root

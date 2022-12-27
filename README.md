@@ -27,3 +27,5 @@ Eg: `["npm install", "npm run build"]`
 `projects[0].buildOutput` is the folder of the eventually built project that will be copied into whereever it's served in the output.
 
 The `serves` and `source` properties are required. A project can either have none of the build properties or all of them.
+If no build properties are specified, relative paths in HTML files (CSS link tags and JS script tags) will be fixed to be
+rooted by the serves tag.
