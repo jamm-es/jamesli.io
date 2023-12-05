@@ -21,7 +21,7 @@
     },
     {
       "serves": "/live-canvas",
-      "source": "https://github.com/annaahsu/csci201-project -b canvas-(james's-version)",
+      "source": "https://github.com/annaahsu/csci201-project -b \"canvas-(james's-version)\"",
       "buildCommands": [
         "cd frontend && npm i",
         "cd frontend && npx next build"
